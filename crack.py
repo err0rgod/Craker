@@ -26,15 +26,18 @@ def check_word(word, hash_func, target_hash):
 
 
 
-def brute_char(max_lenght,min_lenght,charset,hash):
-    for lenght in range(min_lenght,max_lenght+1):
-        for combi in itertools.product(charset,repeat=lenght):
-            candidate = ''.join(combi)
-            hashed = hash_func(candidate.encode()).hexdigest()
-            if hashed == hash:
-                print(f"[+] Password Found {candidate}")
-                stop_flag.set()
-                return
+
+
+def brute_char(length, charset, hash_func, target_hash):
+    for combi in itertools.product(charset, repeat=length):
+        if stop_flag.is_set():
+            return
+        candidate = ''.join(combi)
+        hashed = hash_func(candidate.encode()).hexdigest()
+        if hashed == target_hash.lower():
+            print(f"[+] Password Found: {candidate}")
+            stop_flag.set()
+            return
 
 
 
@@ -50,7 +53,7 @@ def main():
     parser.add_argument("-s","--string",type=str,help="Enter the possible string content if possible")
     parser.add_argument("-mx","--max_lenght",type=int,help="Enter the max lenght of the hash answer")
     parser.add_argument("-mi","--min_lenght",type=int,help="Enter the min lenght of the hash answer")
-    parser.add_argument("-mb","--mode_brute",help="To enable brute force method by char set")
+    parser.add_argument("-mb","--mode_brute",action="store_false",help="To enable brute force method by char set")
 
 
 
@@ -94,19 +97,29 @@ def main():
             executor.submit(check_word, word)'''
     
 
+
+    if charset and (min_lenght is None or max_lenght is None):
+        print("[-] Brute-force mode requires --min_lenght and --max_lenght.")
+        return
+
+    
+
     with ThreadPoolExecutor(max_workers=threads) as executor:
-        if brute_mode == True:
-            for i in range(1,10000000000000000000000000):
+        if charset:
+            for length in range(min_lenght, max_lenght + 1):
                 if stop_flag.is_set():
                     break
-                
-                executor.submit(brute_char, max_lenght,min_lenght,charset,hash)
+                executor.submit(brute_char, length, charset, hash_func, hash)
                 
         else:
             for word in words(wordlist):
                 if stop_flag.is_set():
                     break
                 executor.submit(check_word, word, hash_func, hash)
+
+
+
+        
 
 
 
