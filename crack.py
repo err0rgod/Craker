@@ -96,9 +96,11 @@ def main():
 
     with ThreadPoolExecutor(max_workers=threads) as executor:
         if brute_mode == True:
-            if stop_flag.is_set():
-                break
-            executor.submit(brute_char, max_lenght,min_lenght,charset,hash)
+            for i in range(1,10000000000000000000000000):
+                if stop_flag.is_set():
+                    break
+                
+                executor.submit(brute_char, max_lenght,min_lenght,charset,hash)
                 
         else:
             for word in words(wordlist):
