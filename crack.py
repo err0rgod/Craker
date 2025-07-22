@@ -26,6 +26,11 @@ def check_word(word, hash_func, target_hash):
 
 
 
+def brute_char(max_lenght,min_lenght,charset):
+    
+
+
+
 def main():
 
     parser = argparse.ArgumentParser(description="Hash Cracker ")
