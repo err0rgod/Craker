@@ -34,6 +34,9 @@ def main():
     parser.add_argument("-w","--wordlist_path",type=str,help="Mention the path of the wordlist to brute force the passwords")
     parser.add_argument("-t","--threads",type=int,default=30,help="Enter the Number of threads")
     parser.add_argument("-s","--string",type=str,help="Enter the possible string content if possible")
+    parser.add_argument("-mx","--max_lenght",type=int,help="Enter the max lenght of the hash answer")
+    parser.add_argument("-mi","--min_lenght",type=int,help="Enter the min lenght of the hash answer")
+    
 
 
     args = parser.parse_args()

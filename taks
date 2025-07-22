@@ -1,0 +1,4 @@
+Hybrid Attack Engine (Wordlist + mutation)
+ Brute-Force Mode (Pattern + charset based)
+ Multi-Hash Mode
+ Logging + Resume Mode (real red team flavor)
