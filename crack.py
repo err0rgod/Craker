@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 def words(wordlist):
-    with open(wordlist, 'r') as f:
+    with open(wordlist, 'r',encoding='utf-8', errors='ignore') as f:
         return [line.strip('\n') for line in f]
         
 
@@ -16,6 +16,7 @@ def check_word(word, hash_func, target_hash):
     hashed_word = hash_func(word.encode()).hexdigest()
     if hashed_word == target_hash.lower():
         print(f"[+] Password found: {word}")
+        exit(1)
 
 
 
@@ -48,7 +49,7 @@ def main():
     else:
         print("[-] Unsupported hash type.")
         return
-    ''''
+    '''
     with ThreadPoolExecutor(max_workers=30) as executor:
         for word in words(wordlist):
             hashed_word = hash_func(word.encode()).hexdigest()
