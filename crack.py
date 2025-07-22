@@ -1,6 +1,7 @@
 import argparse
 import hashlib
 from concurrent.futures import ThreadPoolExecutor
+import os
 
 
 
@@ -16,7 +17,7 @@ def check_word(word, hash_func, target_hash):
     hashed_word = hash_func(word.encode()).hexdigest()
     if hashed_word == target_hash.lower():
         print(f"[+] Password found: {word}")
-        exit(1)
+        os.exit(1)
 
 
 
