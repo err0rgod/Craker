@@ -54,13 +54,18 @@ def main():
             hashed_word = hash_func(word.encode()).hexdigest()
             if hashed_word == hash.lower():
                 print(f"[+] Password found: {word}")
-                return''''
+                return'''
 
 
 
     '''with ThreadPoolExecutor(max_workers=30) as executor:
         for word in words(wordlist):
             executor.submit(check_word, word)'''
+    
+
+    with ThreadPoolExecutor(max_workers=threads) as executor:
+        for word in words(wordlist):
+            executor.submit(check_word, word, hash_func, hash)
 
 
 
