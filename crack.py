@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 import os
 import sys
 import threading
+import itertools
 
 
 
@@ -36,7 +37,9 @@ def main():
     parser.add_argument("-s","--string",type=str,help="Enter the possible string content if possible")
     parser.add_argument("-mx","--max_lenght",type=int,help="Enter the max lenght of the hash answer")
     parser.add_argument("-mi","--min_lenght",type=int,help="Enter the min lenght of the hash answer")
-    
+    parser.add_argument("-mb","--mode_brute",help="To enable brute force method by char set")
+
+
 
 
     args = parser.parse_args()
@@ -45,6 +48,12 @@ def main():
     hash_type = args.hash_type
     wordlist = args.wordlist_path
     threads = args.threads
+    max_lenght = args.max_lenght
+    min_lenght = args.min_lenght
+    brute_mode = args.mode_brute
+    charset = args.string
+
+
 
 
 
