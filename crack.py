@@ -26,8 +26,16 @@ def check_word(word, hash_func, target_hash):
 
 
 
-def brute_char(max_lenght,min_lenght,charset):
-    
+def brute_char(max_lenght,min_lenght,charset,hash):
+    for lenght in range(min_lenght,max_lenght+1):
+        for combi in itertools.product(charset,repeat=lenght):
+            candidate = ''.join(combi)
+            hashed = hash_func(candidate.encode()).hexdigest()
+            if hashed == hash:
+                print(f"[+] Password Found {candidate}")
+                stop_flag.set()
+                return
+
 
 
 
@@ -87,10 +95,16 @@ def main():
     
 
     with ThreadPoolExecutor(max_workers=threads) as executor:
-        for word in words(wordlist):
+        if brute_mode == True:
             if stop_flag.is_set():
                 break
-            executor.submit(check_word, word, hash_func, hash)
+            executor.submit(brute_char, max_lenght,min_lenght,charset,hash)
+                
+        else:
+            for word in words(wordlist):
+                if stop_flag.is_set():
+                    break
+                executor.submit(check_word, word, hash_func, hash)
 
 
 
