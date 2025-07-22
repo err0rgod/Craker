@@ -2,8 +2,12 @@ import argparse
 import hashlib
 from concurrent.futures import ThreadPoolExecutor
 import os
+import sys
+import threading
 
 
+
+stop_flag = threading.Event()
 
 
 
@@ -17,7 +21,7 @@ def check_word(word, hash_func, target_hash):
     hashed_word = hash_func(word.encode()).hexdigest()
     if hashed_word == target_hash.lower():
         print(f"[+] Password found: {word}")
-        os.exit(1)
+        stop_flag.set()
 
 
 
@@ -67,6 +71,8 @@ def main():
 
     with ThreadPoolExecutor(max_workers=threads) as executor:
         for word in words(wordlist):
+            if stop_flag.is_set():
+                break
             executor.submit(check_word, word, hash_func, hash)
 
 
