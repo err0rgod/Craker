@@ -73,15 +73,18 @@ def main():
 
 
 
-    if hash_type == "md5":
-         hash_func = hashlib.md5
-    elif hash_type == "sha1":
-        hash_func = hashlib.sha1
-    elif hash_type == "sha256":
-        hash_func = hashlib.sha256
-    else:
-        print("[-] Unsupported hash type.")
-        return
+    hash_funcs = {
+        "md5": hashlib.md5,
+        "sha1": hashlib.sha1,
+        "sha256": hashlib.sha256,
+        "sha224": hashlib.sha224,
+        "sha384": hashlib.sha384,
+        "sha512": hashlib.sha512
+    }
+
+    hash_func = hash_funcs.get(hash_type)
+
+
     '''
     with ThreadPoolExecutor(max_workers=30) as executor:
         for word in words(wordlist):
