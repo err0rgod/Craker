@@ -3,6 +3,7 @@ import hashlib
 from concurrent.futures import ThreadPoolExecutor
 import os
 import sys
+from tqdm import tqdm
 import threading
 import itertools
 
@@ -18,17 +19,27 @@ def words(wordlist):
         
 
 
-def check_word(word, hash_func, target_hash):
+def check_word(word, hash_func, target_hash, pbar=None):
     hashed_word = hash_func(word.encode()).hexdigest()
     if hashed_word == target_hash.lower():
         print(f"[+] Password found: {word}")
         stop_flag.set()
+    if pbar:
+        pbar.update(1)
+
+
+
+'''def check_word(word, hash_func, target_hash):
+    hashed_word = hash_func(word.encode()).hexdigest()
+    if hashed_word == target_hash.lower():
+        print(f"[+] Password found: {word}")
+        stop_flag.set()
+'''
 
 
 
 
-
-def brute_char(length, charset, hash_func, target_hash):
+def brute_char(length, charset, hash_func, target_hash,pbar=None):
     for combi in itertools.product(charset, repeat=length):
         if stop_flag.is_set():
             return
@@ -38,6 +49,9 @@ def brute_char(length, charset, hash_func, target_hash):
             print(f"[+] Password Found: {candidate}")
             stop_flag.set()
             return
+        if pbar:
+            pbar.update(1)
+
 
 
 
@@ -112,14 +126,30 @@ def main():
             for length in range(min_lenght, max_lenght + 1):
                 if stop_flag.is_set():
                     break
-                executor.submit(brute_char, length, charset, hash_func, hash)
+                executor.submit(brute_char, length, charset, hash_func, hash,pbar)
+                pbar.close(9)
                 
         else:
-            for word in words(wordlist):
+            wordlist_data = words(wordlist)
+            with tqdm(total=len(wordlist_data), desc="📘 Wordlist Attack") as pbar:
+                for word in wordlist_data:
+                    if stop_flag.is_set():
+                        break
+                    executor.submit(check_word, word, hash_func, hash, pbar)
+
+
+
+
+
+
+
+
+
+            '''for word in words(wordlist):
                 if stop_flag.is_set():
                     break
                 executor.submit(check_word, word, hash_func, hash)
-
+'''
 
 
         
