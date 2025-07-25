@@ -11,6 +11,8 @@ import itertools
 
 stop_flag = threading.Event()
 
+pbar_lock = threading.Lock()
+
 
 
 def words(wordlist):
@@ -25,7 +27,20 @@ def check_word(word, hash_func, target_hash, pbar=None):
         print(f"[+] Password found: {word}")
         stop_flag.set()
     if pbar:
-        pbar.update(1)
+        with pbar_lock:
+            pbar.update(1)
+
+
+
+
+'''
+def check_word(word, hash_func, target_hash, pbar=None):
+    hashed_word = hash_func(word.encode()).hexdigest()
+    if hashed_word == target_hash.lower():
+        print(f"[+] Password found: {word}")
+        stop_flag.set()
+    if pbar:
+        pbar.update(1)'''
 
 
 
@@ -37,9 +52,7 @@ def check_word(word, hash_func, target_hash, pbar=None):
 '''
 
 
-
-
-def brute_char(length, charset, hash_func, target_hash,pbar=None):
+def brute_char(length, charset, hash_func, target_hash, pbar=None):
     for combi in itertools.product(charset, repeat=length):
         if stop_flag.is_set():
             return
@@ -50,7 +63,24 @@ def brute_char(length, charset, hash_func, target_hash,pbar=None):
             stop_flag.set()
             return
         if pbar:
-            pbar.update(1)
+            with pbar_lock:
+                pbar.update(1)
+
+
+
+
+'''def brute_char(length, charset, hash_func, target_hash,pbar=None):
+    for combi in itertools.product(charset, repeat=length):
+        if stop_flag.is_set():
+            return
+        candidate = ''.join(combi)
+        hashed = hash_func(candidate.encode()).hexdigest()
+        if hashed == target_hash.lower():
+            print(f"[+] Password Found: {candidate}")
+            stop_flag.set()
+            return
+        if pbar:
+            pbar.update(1)'''
 
 
 
@@ -123,11 +153,13 @@ def main():
 
     with ThreadPoolExecutor(max_workers=threads) as executor:
         if charset:
-            for length in range(min_lenght, max_lenght + 1):
-                if stop_flag.is_set():
-                    break
-                executor.submit(brute_char, length, charset, hash_func, hash,pbar)
-                pbar.close(9)
+            total = sum(len(charset) ** l for l in range(min_lenght, max_lenght + 1))
+            with tqdm(total=total, desc="🔐 Brute Force Progress") as pbar:
+                for length in range(min_lenght, max_lenght + 1):
+                    if stop_flag.is_set():
+                        break
+                    executor.submit(brute_char, length, charset, hash_func, hash, pbar)
+
                 
         else:
             wordlist_data = words(wordlist)
@@ -136,6 +168,7 @@ def main():
                     if stop_flag.is_set():
                         break
                     executor.submit(check_word, word, hash_func, hash, pbar)
+            pbar.close()
 
 
 

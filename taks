@@ -2,3 +2,8 @@ Hybrid Attack Engine (Wordlist + mutation)
  Brute-Force Mode (Pattern + charset based)
  Multi-Hash Mode
  Logging + Resume Mode (real red team flavor)
+
+
+
+
+ python ./crack.py -hash eb0a191797624dd3a48fa681d3061212 -type md5 -s msaert123 -mi 2 -mx 7 -t 20
