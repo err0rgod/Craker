@@ -1,6 +1,6 @@
 import argparse
 import hashlib
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 import os
 import sys
 from tqdm import tqdm
@@ -151,7 +151,7 @@ def main():
 
     
 
-    with ThreadPoolExecutor(max_workers=threads) as executor:
+    with ProcessPoolExecutor(max_workers=threads) as executor:
         if charset:
             total = sum(len(charset) ** l for l in range(min_lenght, max_lenght + 1))
             with tqdm(total=total, desc="🔐 Brute Force Progress") as pbar:
