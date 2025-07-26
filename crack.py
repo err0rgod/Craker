@@ -158,17 +158,33 @@ def main():
                 for length in range(min_lenght, max_lenght + 1):
                     if stop_flag.is_set():
                         break
-                    executor.submit(brute_char, length, charset, hash_func, hash, pbar)
+                    futures = []
+                    for length in range(min_lenght, max_lenght + 1):
+                        if stop_flag.is_set():
+                            break
+                        futures.append(executor.submit(brute_char, length, charset, hash_func, hash, pbar))
+
+                    for future in futures:
+                        if stop_flag.is_set():
+                            break
+                        future.result()
+
 
                 
         else:
             wordlist_data = words(wordlist)
             with tqdm(total=len(wordlist_data), desc="📘 Wordlist Attack") as pbar:
+                futures = []
                 for word in wordlist_data:
                     if stop_flag.is_set():
                         break
-                    executor.submit(check_word, word, hash_func, hash, pbar)
-            pbar.close()
+                    futures.append(executor.submit(check_word, word, hash_func, hash, pbar))
+
+# Wait for threads to complete
+                for future in futures:
+                    if stop_flag.is_set():
+                        break
+                    future.result()
 
 
 
